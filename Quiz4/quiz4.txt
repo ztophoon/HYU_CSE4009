@@ -1,0 +1,2 @@
+2. main.o read.o write.o test
+3. main.o test

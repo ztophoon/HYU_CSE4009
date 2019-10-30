@@ -1,3 +1,3 @@
 #!/bin/sh
 
-whereis $1 | cut -d"/" -f2
+whereis $1 | cut -d" " -f2

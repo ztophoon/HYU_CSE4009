@@ -59,8 +59,9 @@ int main(void){
 	pthread_create(&a, NULL, threadA, NULL);
 	pthread_create(&b, NULL, threadB, NULL);
 
-	pthread_join(a, NULL);
-	pthread_join(b, NULL);
+pthread_join(b, NULL);	
+pthread_join(a, NULL);
+	
 
 	return 0;
 }

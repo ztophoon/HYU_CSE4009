@@ -1,0 +1,6 @@
+while ( fgets(mystring, MAX_BUF, infile) != NULL ) 의 조건문에서 server로 부터 넘겨받은 infile은 
+FIFO파일으로 새로운 input을 받기 전 까지는 값이 return 되지 않는다.
+처음 server로 부터 input이 담긴 상태의 infile을 넘겨 받아서 while loop에 의해 출력을 한 뒤에,
+다시 조건문에 의해 fgets에서 infile은 input을 기다리는 상태가 된다.
+하지만 client의 프로세스가 계속 반복문의 loop에 머물고만 있기 때문에 새로운 input은 들어오지 않는다.
+따라서 계속해서 while loop에 머물게 된다.

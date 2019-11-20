@@ -1,0 +1,7 @@
+(1)
+ls -alF > aaaa & : 백 그라운드에서 실행되고 종료됨. ls의 출력 내용이 출력됨.
+cat aaaa : 위 ls 를 통해 받은 입력을 cat을 통해 출력되고 종료됨.
+
+(2)
+cat aaaa & : 백 그라운드에서 실행되지만 fifo에 아무런 값이 없으므로 input을 기다림.
+ls -alF > aaaa : ls 내용을 input으로 aaaa에 전달함. 백 그라운드에서 실행 중이던 cat는 이를 받아서 출력함.

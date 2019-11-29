@@ -24,11 +24,11 @@ int main(int argc, char* argv[]){
     char* buffer = new char[SIZE_OF_BUFFER];
 
     string tempStr = argv[1];
+    tempStr = "\"" + tempStr + "\"";
     string commandStr = defaultCommandString + defaultGrepString + tempStr;
-    string tcommandStr = commandStr + "> !gitvim_file_list.txt";
-
+    string tcommandStr = commandStr + " > !gitvim_file_list.txt";
     sys_result = system("touch !gitvim_file_list.txt");
-    sys_result = system(tcommandStr);
+    sys_result = system(tcommandStr.c_str());
 
     int cnt = 0;
     sys_result = system("touch !gitvim_result_list.txt");
@@ -37,15 +37,70 @@ int main(int argc, char* argv[]){
     fprintf(fp_w, "--------------------------------------------------------------\n");
     while(!feof(fp_r)){
         fscanf(fp_r, "%[^\n]s", buffer);
-        fgetc();
-        tempStr = buffer;
-        fprint(fp_w, "%s (%d)\n", tempStr, ++cnt);
+        fgetc(fp_r);
+        fprintf(fp_w, "%s (%d)\n", buffer, ++cnt);
         if(cnt == 10) break;
     }
+    fprintf(fp_w, "Enter file shortcut (shown on the right) or keyword to further refine the search:\n");
     fclose(fp_r);
     fclose(fp_w);
 
-    
+    int tflag = 0;
+    while(!tflag){
+        // CASE(1) : NO FILES
+        if(cnt == 0){
+            perror("there is no files with given string");
+            exit(1);
+        }
+        // CASE(2) : ONLY ONE FILE; open with vim
+        else if(cnt == 1){
+            fp_r = fopen("!gitvim_result_list.txt", "r");
+            fscanf(fp_r, "%[^\n]s", buffer);
+            fgetc(fp_r);
+            tempStr = buffer;
+            tempStr = "vim " + tempStr;
+            sys_result = system(tempStr.c_str());
+            fclose(fp_r);
+            tflag = 1;
+        }
+        // CASE(3) : MORE THAN ONE FILE; loop
+        else{
+            // print
+            sys_result = system("cat !gitvim_result_list.txt");
+
+            cin >> tempStr;
+
+            // case : input string is integer.
+            if(tempStr == "1" || tempStr == "2" || tempStr == "3" || tempStr == "4" || tempStr == "5" ||
+               tempStr == "6" || tempStr == "7" || tempStr == "8" || tempStr == "9" || tempStr == "10"){
+                int num = 0;
+                int flag = 0;
+                fp_r = fopen("!gitvim_result_list.txt", "r");
+                while(!feof(fp_r)){
+                    fscanf(fp_r, "%[^\n]s", buffer);
+                    fgetc(fp_r);
+                    if(toString(num++) == tempStr){
+                        String tempCmd = buffer;
+                        tempCmd = "vim " + tempCmd;
+                        sys_result(tempCmd.c_str());
+                        flag = 1;
+                        break;
+                    }
+                }
+                if(flag == 0){
+                    perror("sorry, wrong input");
+                    exit(1);
+                }
+                fclose(fp_r);
+                tflag = 1;
+            }
+
+            // case : input string is string.
+            else{
+            
+            }
+        }
+    }
 
     //sys_result = system("rm -f !gitvim_file_list.txt");
     //sys_resutl = system("rm -f !gitvim_result_list.txt");

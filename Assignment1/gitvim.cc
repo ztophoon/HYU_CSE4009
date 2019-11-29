@@ -10,7 +10,8 @@ FILE* fp_r = NULL;
 FILE* fp_w = NULL;
 
 string defaultCommandString = "git ls-files `git rev-parse --show-toplevel`";
-string defaultGrepString = " | grep ";
+string defaultGrepString = " | egrep \"/?[^/]*";
+string defaultGrepString2 = "[^/]*$\"";
 
 int main(int argc, char* argv[]){
     if(argc < 2){
@@ -22,9 +23,9 @@ int main(int argc, char* argv[]){
     char* buffer = new char[SIZE_OF_BUFFER];
 
     string tempStr = argv[1];
-    tempStr = "\"" + tempStr + "\"";
+    //tempStr = "\"" + tempStr + "\"";
 
-    string commandStr = defaultCommandString + defaultGrepString + tempStr;
+    string commandStr = defaultCommandString + defaultGrepString + tempStr + defaultGrepString2;
     string tcommandStr = commandStr + " > !gitvim_file_list.txt";
 
     sys_result = system("touch !gitvim_file_list.txt");
@@ -105,12 +106,16 @@ int main(int argc, char* argv[]){
 
             // case : input is string.
             else{
-                sys_result = system("rm -f !gitvim_file_list.txt");
-                sys_result = system("touch !gitvim_file_list.txt");
+                //sys_result = system("rm -f !gitvim_file_list.txt");
+                //sys_result = system("touch !gitvim_file_list.txt");
                 sys_result = system("rm -f !gitvim_result_list.txt");
                 sys_result = system("touch !gitvim_result_list.txt");
 
-                commandStr += defaultGrepString + tempStr;
+                sys_result = system("cp !gitvim_file_list.txt !gitvim_temp_list.txt");
+
+                commandStr = "egrep \"/?[^/]*" + tempStr + defaultGrepString2 + " !gitvim_temp_list.txt";
+                //string tempCmd = argv[1];
+                //commandStr = "grep"
                 tcommandStr = commandStr + " > !gitvim_file_list.txt";
                 sys_result = system(tcommandStr.c_str());
 
@@ -127,6 +132,8 @@ int main(int argc, char* argv[]){
                     if(tempBuffer.length()) fprintf(fp_w, "%s (%d)\n", buffer, ++cnt);
                 }
                 fprintf(fp_w, "Enter file shortcut (shown on the right) or keyword to further refine the search:\n");
+
+                sys_result = system("rm -f !gitvim_temp_list.txt");
 
                 fclose(fp_r);
                 fclose(fp_w);

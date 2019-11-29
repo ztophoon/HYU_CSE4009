@@ -15,7 +15,7 @@ string defaultGrepString2 = "[^/]*$\"";
 
 int main(int argc, char* argv[]){
     if(argc < 2){
-        perror("there is no command line argument");
+        perror("there is no command line argument ");
         exit(1);
     }
 
@@ -53,7 +53,7 @@ int main(int argc, char* argv[]){
     while(!tflag){
         // CASE(1) : NO FILES
         if(cnt == 0){
-            perror("there is no files with given string");
+            perror("there is no files with given string ");
             exit(1);
         }
 
@@ -97,7 +97,7 @@ int main(int argc, char* argv[]){
                     }
                 }
                 if(flag == 0){
-                    perror("sorry, wrong input");
+                    perror("sorry, wrong input ");
                     exit(1);
                 }
                 fclose(fp_r);

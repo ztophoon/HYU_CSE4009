@@ -36,6 +36,7 @@ int main(int argc, char* argv[]){
     fp_w = fopen("!gitvim_result_list.txt", "w");
     fprintf(fp_w, "--------------------------------------------------------------\n");
     while(!feof(fp_r)){
+        memset(buffer, 0, SIZE_OF_BUFFER);
         fscanf(fp_r, "%[^\n]s", buffer);
         fgetc(fp_r);
         fprintf(fp_w, "%s (%d)\n", buffer, ++cnt);
@@ -54,12 +55,16 @@ int main(int argc, char* argv[]){
         }
         // CASE(2) : ONLY ONE FILE; open with vim
         else if(cnt == 1){
-            fp_r = fopen("!gitvim_result_list.txt", "r");
+            fp_r = fopen("!gitvim_file_list.txt", "r");
+
+            memset(buffer, 0, SIZE_OF_BUFFER);
             fscanf(fp_r, "%[^\n]s", buffer);
             fgetc(fp_r);
+
             tempStr = buffer;
             tempStr = "vim " + tempStr;
             sys_result = system(tempStr.c_str());
+
             fclose(fp_r);
             tflag = 1;
         }
@@ -70,7 +75,7 @@ int main(int argc, char* argv[]){
 
             cin >> tempStr;
 
-            // case : input string is integer.
+            // case : input is integer.
             if(tempStr == "1" || tempStr == "2" || tempStr == "3" || tempStr == "4" || tempStr == "5" ||
                tempStr == "6" || tempStr == "7" || tempStr == "8" || tempStr == "9" || tempStr == "10"){
                 int num = 0;
@@ -96,7 +101,7 @@ int main(int argc, char* argv[]){
                 tflag = 1;
             }
 
-            // case : input string is string.
+            // case : input is string.
             else{
                 sys_result = system("rm -f !gitvim_file_list.txt");
                 sys_result = system("touch !gitvim_file_list.txt");
@@ -113,9 +118,11 @@ int main(int argc, char* argv[]){
 
                 cnt = 0;
                 while(!feof(fp_r) && cnt < 10){
+                    memset(buffer, 0, SIZE_OF_BUFFER);
                     fscanf(fp_r, "%[^\n]s", buffer);
                     fgetc(fp_r);
-                    fprintf(fp_w, "%s (%d)\n", buffer, ++cnt);
+                    string tempBuffer = buffer;
+                    if(tempBuffer.length()) fprintf(fp_w, "%s (%d)\n", buffer, ++cnt);
                 }
                 fprintf(fp_w, "Enter file shortcut (shown on the right) or keyword to further refine the search:\n");
 

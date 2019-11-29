@@ -9,12 +9,10 @@ using namespace std;
 FILE* fp_r = NULL;
 FILE* fp_w = NULL;
 
-string defaultGitPath;
 string defaultCommandString = "git ls-files `git rev-parse --show-toplevel`";
 string defaultGrepString = " | grep ";
 
 int main(int argc, char* argv[]){
-    // Exception handling
     if(argc < 2){
         perror("there is no command line argument");
         exit(1);
@@ -25,8 +23,10 @@ int main(int argc, char* argv[]){
 
     string tempStr = argv[1];
     tempStr = "\"" + tempStr + "\"";
+
     string commandStr = defaultCommandString + defaultGrepString + tempStr;
     string tcommandStr = commandStr + " > !gitvim_file_list.txt";
+
     sys_result = system("touch !gitvim_file_list.txt");
     sys_result = system(tcommandStr.c_str());
 
@@ -39,7 +39,9 @@ int main(int argc, char* argv[]){
         memset(buffer, 0, SIZE_OF_BUFFER);
         fscanf(fp_r, "%[^\n]s", buffer);
         fgetc(fp_r);
-        fprintf(fp_w, "%s (%d)\n", buffer, ++cnt);
+
+        string tempBuffer = buffer;
+        if(tempBuffer.length()) fprintf(fp_w, "%s (%d)\n", buffer, ++cnt);
         if(cnt == 10) break;
     }
     fprintf(fp_w, "Enter file shortcut (shown on the right) or keyword to further refine the search:\n");
@@ -53,6 +55,7 @@ int main(int argc, char* argv[]){
             perror("there is no files with given string");
             exit(1);
         }
+
         // CASE(2) : ONLY ONE FILE; open with vim
         else if(cnt == 1){
             fp_r = fopen("!gitvim_file_list.txt", "r");
@@ -68,11 +71,10 @@ int main(int argc, char* argv[]){
             fclose(fp_r);
             tflag = 1;
         }
+
         // CASE(3) : MORE THAN ONE FILE; loop
         else{
-            // print
             sys_result = system("cat !gitvim_result_list.txt");
-
             cin >> tempStr;
 
             // case : input is integer.
@@ -132,8 +134,8 @@ int main(int argc, char* argv[]){
         }
     }
 
-    //sys_result = system("rm -f !gitvim_file_list.txt");
-    //sys_resutl = system("rm -f !gitvim_result_list.txt");
+    sys_result = system("rm -f !gitvim_file_list.txt");
+    sys_result = system("rm -f !gitvim_result_list.txt");
 
     delete[] buffer;
     return 0;

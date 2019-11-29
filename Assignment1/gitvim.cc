@@ -10,8 +10,8 @@ FILE* fp_r = NULL;
 FILE* fp_w = NULL;
 
 string defaultGitPath;
-string defaultCommandString = "git ls-files `git rev-parse --show-toplevel` ";
-string defaultGrepString = "| grep ";
+string defaultCommandString = "git ls-files `git rev-parse --show-toplevel`";
+string defaultGrepString = " | grep ";
 
 int main(int argc, char* argv[]){
     // Exception handling
@@ -75,14 +75,15 @@ int main(int argc, char* argv[]){
                tempStr == "6" || tempStr == "7" || tempStr == "8" || tempStr == "9" || tempStr == "10"){
                 int num = 0;
                 int flag = 0;
-                fp_r = fopen("!gitvim_result_list.txt", "r");
-                while(!feof(fp_r)){
+                fp_r = fopen("!gitvim_file_list.txt", "r");
+                while(num < 10){
                     fscanf(fp_r, "%[^\n]s", buffer);
                     fgetc(fp_r);
-                    if(toString(num++) == tempStr){
-                        String tempCmd = buffer;
+                    num++;
+                    if(to_string(num) == tempStr){
+                        string tempCmd = buffer;
                         tempCmd = "vim " + tempCmd;
-                        sys_result(tempCmd.c_str());
+                        sys_result = system(tempCmd.c_str());
                         flag = 1;
                         break;
                     }
@@ -97,7 +98,29 @@ int main(int argc, char* argv[]){
 
             // case : input string is string.
             else{
-            
+                sys_result = system("rm -f !gitvim_file_list.txt");
+                sys_result = system("touch !gitvim_file_list.txt");
+                sys_result = system("rm -f !gitvim_result_list.txt");
+                sys_result = system("touch !gitvim_result_list.txt");
+
+                commandStr += defaultGrepString + tempStr;
+                tcommandStr = commandStr + " > !gitvim_file_list.txt";
+                sys_result = system(tcommandStr.c_str());
+
+                fp_r = fopen("!gitvim_file_list.txt", "r");
+                fp_w = fopen("!gitvim_result_list.txt", "w");
+                fprintf(fp_w, "--------------------------------------------------------------\n");
+
+                cnt = 0;
+                while(!feof(fp_r) && cnt < 10){
+                    fscanf(fp_r, "%[^\n]s", buffer);
+                    fgetc(fp_r);
+                    fprintf(fp_w, "%s (%d)\n", buffer, ++cnt);
+                }
+                fprintf(fp_w, "Enter file shortcut (shown on the right) or keyword to further refine the search:\n");
+
+                fclose(fp_r);
+                fclose(fp_w);
             }
         }
     }

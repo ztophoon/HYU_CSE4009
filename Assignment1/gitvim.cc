@@ -10,11 +10,14 @@ FILE* fp_r = NULL;
 FILE* fp_w = NULL;
 
 string defaultCommandString = "git ls-files `git rev-parse --show-toplevel`";
-string defaultGrepString = " | egrep \"/?[^/]*";
+string defaultGrepString1 = " | egrep \"/?[^/]*";
 string defaultGrepString2 = "[^/]*$\"";
+
+void rm();
 
 int main(int argc, char* argv[]){
     if(argc < 2){
+        rm();
         perror("there is no command line argument ");
         exit(1);
     }
@@ -23,9 +26,8 @@ int main(int argc, char* argv[]){
     char* buffer = new char[SIZE_OF_BUFFER];
 
     string tempStr = argv[1];
-    //tempStr = "\"" + tempStr + "\"";
 
-    string commandStr = defaultCommandString + defaultGrepString + tempStr + defaultGrepString2;
+    string commandStr = defaultCommandString + defaultGrepString1 + tempStr + defaultGrepString2;
     string tcommandStr = commandStr + " > !gitvim_file_list.txt";
 
     sys_result = system("touch !gitvim_file_list.txt");
@@ -53,6 +55,7 @@ int main(int argc, char* argv[]){
     while(!tflag){
         // CASE(1) : NO FILES
         if(cnt == 0){
+            rm();
             perror("there is no files with given string ");
             exit(1);
         }
@@ -97,6 +100,7 @@ int main(int argc, char* argv[]){
                     }
                 }
                 if(flag == 0){
+                    rm();
                     perror("sorry, wrong input ");
                     exit(1);
                 }
@@ -106,16 +110,12 @@ int main(int argc, char* argv[]){
 
             // case : input is string.
             else{
-                //sys_result = system("rm -f !gitvim_file_list.txt");
-                //sys_result = system("touch !gitvim_file_list.txt");
                 sys_result = system("rm -f !gitvim_result_list.txt");
                 sys_result = system("touch !gitvim_result_list.txt");
 
                 sys_result = system("cp !gitvim_file_list.txt !gitvim_temp_list.txt");
 
                 commandStr = "egrep \"/?[^/]*" + tempStr + defaultGrepString2 + " !gitvim_temp_list.txt";
-                //string tempCmd = argv[1];
-                //commandStr = "grep"
                 tcommandStr = commandStr + " > !gitvim_file_list.txt";
                 sys_result = system(tcommandStr.c_str());
 
@@ -141,9 +141,15 @@ int main(int argc, char* argv[]){
         }
     }
 
-    sys_result = system("rm -f !gitvim_file_list.txt");
-    sys_result = system("rm -f !gitvim_result_list.txt");
+    rm();
 
     delete[] buffer;
     return 0;
+}
+
+void rm(){
+    int sys_result;
+    sys_result = system("rm -f !gitvim_file_list.txt");
+    sys_result = system("rm -f !gitvim_result_list.txt");
+    return;
 }

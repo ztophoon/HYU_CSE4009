@@ -13,10 +13,11 @@ void* threadA(){
 
 	while(i < 5){
 		//TODO
-		while(state == STATE_B){
-			usleep(10);
-			//puts("A");
+        pthread_mutex_lock(&mutex);
+        while(state == STATE_B){
+			pthread_cond_wait(&condA, &mutex);
 		}
+        pthread_mutex_unlock(&mutex);
 		
 		for(loopnum = 1; loopnum <= 5; loopnum++)
 			printf("Hello %d\n", loopnum);
@@ -39,16 +40,15 @@ void* threadB(){
 		pthread_mutex_lock(&mutex);
 		while(state != STATE_B){
 			pthread_cond_wait(&condB, &mutex);
-			//puts("B");
 		}
 		pthread_mutex_unlock(&mutex);
 
 		printf("Goodbye\n");
 
 		//TODO
-		while(state==STATE_A) usleep(10);
 		pthread_mutex_lock(&mutex);
 		state = STATE_A;
+        pthread_cond_signal(&condA);
 		pthread_mutex_unlock(&mutex);
 		
 		n++;
